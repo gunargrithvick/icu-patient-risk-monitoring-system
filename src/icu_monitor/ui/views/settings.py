@@ -184,7 +184,7 @@ def _thresholds_form() -> None:
                     composite_high_threshold=float(comp_high),
                     composite_critical_threshold=float(comp_critical),
                 ):
-                    st.success("Thresholds applied; the ward was rebuilt with them.")
+                    app_state.flash_success("Thresholds applied; the ward was rebuilt with them.")
                     st.rerun()
 
 
@@ -213,7 +213,7 @@ def _weights_form() -> None:
                 elif app_state.apply_settings(
                     weight_ml=ml, weight_news2=news2, weight_vision=vision
                 ):
-                    st.success("Weights applied.")
+                    app_state.flash_success("Weights applied.")
                     st.rerun()
 
 
@@ -302,7 +302,7 @@ def _ward_form() -> None:
                 alert_cooldown_seconds=float(cooldown),
             ):
                 st.session_state.pop("icu_selected_patient", None)
-                st.success("Ward rebuilt.")
+                app_state.flash_success("Ward rebuilt.")
                 st.rerun()
 
 

@@ -359,8 +359,14 @@ def test_the_ward_is_behind_the_key_and_the_probes_are_not(client: TestClient) -
     """
     keyed, open_paths = set(), set()
     for route in create_app().routes:
+        # FastAPI exposes router-level dependencies directly on older releases, but folds
+        # them into ``route.dependant.dependencies`` on newer releases. Inspect both public
+        # representations so this contract test remains valid across the supported range.
         dependencies = getattr(route, "dependencies", [])
-        target = keyed if any(d.dependency is require_api_key for d in dependencies) else open_paths
+        calls = [d.dependency for d in dependencies]
+        if not calls:
+            calls = [d.call for d in getattr(getattr(route, "dependant", None), "dependencies", [])]
+        target = keyed if require_api_key in calls else open_paths
         target.add(getattr(route, "path", ""))
 
     assert keyed, "expected the ward routes to be guarded"

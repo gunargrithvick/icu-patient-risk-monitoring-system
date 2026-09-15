@@ -100,6 +100,8 @@ def main() -> None:
     ui.inject_theme()
 
     snapshot = app_state.snapshot()
+    if message := app_state.consume_flash_success():
+        st.success(message)
     view = _sidebar(snapshot)
 
     if view == "Ward overview":

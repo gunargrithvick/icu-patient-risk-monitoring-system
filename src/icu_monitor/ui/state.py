@@ -117,6 +117,21 @@ def reset_to_defaults() -> None:
     get_app_state.clear()
 
 
+def flash_success(message: str) -> None:
+    """Show a success message on the rerun that follows a state-changing action.
+
+    Streamlit may discard elements emitted immediately before ``st.rerun()``. Keeping the
+    message in session state makes confirmations reliable across Streamlit versions and keeps
+    a successful settings change visible to the operator after the new engine is built.
+    """
+    st.session_state["icu_flash_success"] = message
+
+
+def consume_flash_success() -> str | None:
+    """Return and clear the pending success message, if one exists."""
+    return st.session_state.pop("icu_flash_success", None)
+
+
 def state() -> AppState:
     """The live engine owner for this session."""
     return get_app_state(settings_fingerprint(current_settings()))
@@ -195,8 +210,10 @@ __all__ = [
     "acknowledge_alert",
     "acknowledge_all_alerts",
     "apply_settings",
+    "consume_flash_success",
     "current_settings",
     "engine",
+    "flash_success",
     "get_app_state",
     "persisted_alerts",
     "reset_to_defaults",
