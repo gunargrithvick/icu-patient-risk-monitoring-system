@@ -483,7 +483,7 @@ A green suite says the units agree with each other. Only job 3 says the install 
 
 Vercel deploys the FastAPI application from the root-level [`api/index.py`](api/index.py) entry point. That small adapter adds the repository's `src/` package to Python's import path and exposes the existing `icu_monitor.api.main:app`; local, Docker, and Streamlit runs continue to use the same application module. The committed [`vercel.json`](vercel.json) limits function duration and excludes tests, local data, model artefacts, Docker files, and other development-only content from the function bundle. The committed [`.python-version`](.python-version) selects Python 3.14, which is supported by Vercel's [Python runtime](https://vercel.com/docs/functions/runtimes/python).
 
-Vercel is an appropriate target for the stateless scoring endpoints and request-driven API, as described in Vercel's [FastAPI deployment guide](https://vercel.com/kb/guide/ship-a-fastapi-app-on-vercel). It is not the persistence or dashboard host for this project:
+Vercel is an appropriate target for the stateless scoring endpoints and request-driven API, as described in Vercel's [FastAPI deployment guide](https://vercel.com/kb/guide/ship-a-fastapi-app-on-vercel). It is not the persistence or dashboard host for this project. Vercel uses the focused [`requirements-vercel.txt`](requirements-vercel.txt) install set so the dashboard-only Streamlit, Altair, and training dependencies in [`requirements.txt`](requirements.txt) do not inflate the serverless function bundle:
 
 - Vercel Functions have a read-only filesystem apart from temporary `/tmp` space. Do **not** use the default SQLite path as production storage there; use an external PostgreSQL database and set `ICU_DATABASE_URL` to its connection URL. If the database is unavailable, this application deliberately falls back to in-memory operation, which is useful for a demo but not durable across function instances.
 - Vercel Functions are request-driven and can scale across instances. The ward therefore advances when API traffic requests a snapshot; it is not a permanently running background monitor. The external ledger is the shared source of truth, but live in-memory engine state is still per warm function instance.
@@ -494,7 +494,7 @@ Vercel is an appropriate target for the stateless scoring endpoints and request-
 #### Vercel setup
 
 1. Push this repository to GitHub and import it into Vercel. Keep the project root at the repository root; do not set a separate build command or output directory.
-2. Create a PostgreSQL database that is reachable from Vercel and run the deployment with the `psycopg` extra supplied by [`requirements.txt`](requirements.txt).
+2. Create a PostgreSQL database that is reachable from Vercel. The committed `requirements-vercel.txt` file installs the PostgreSQL driver and the API-only runtime dependencies; [`requirements.txt`](requirements.txt) remains the complete Streamlit/dashboard environment.
 3. Add these Production environment variables in Vercel:
 
    ```text
