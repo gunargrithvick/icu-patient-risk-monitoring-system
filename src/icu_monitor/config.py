@@ -151,8 +151,17 @@ class Settings(BaseSettings):
         if self.artifacts_dir is None:
             object.__setattr__(self, "artifacts_dir", root / "artifacts")
         if self.database_url is None:
-            db_path = (self.data_dir / "icu_monitor.db").as_posix()
-            object.__setattr__(self, "database_url", f"sqlite:///{db_path}")
+            # Neon’s Vercel integration can prepend a custom prefix to every generated
+            # variable. If ``ICU_DATABASE`` is supplied as that prefix, the resulting
+            # pooled URL is ``ICU_DATABASE_DATABASE_URL``. Prefer the documented
+            # ``ICU_DATABASE_URL`` when it exists, but accept the generated alias so a
+            # connected Neon resource is not silently replaced by ephemeral SQLite.
+            neon_database_url = os.environ.get("ICU_DATABASE_DATABASE_URL")
+            if neon_database_url:
+                object.__setattr__(self, "database_url", neon_database_url)
+            else:
+                db_path = (self.data_dir / "icu_monitor.db").as_posix()
+                object.__setattr__(self, "database_url", f"sqlite:///{db_path}")
 
     @model_validator(mode="after")
     def _validate_ordered_thresholds(self) -> Settings:

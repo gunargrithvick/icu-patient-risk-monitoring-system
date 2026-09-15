@@ -96,6 +96,15 @@ def test_an_explicit_database_url_is_not_overwritten(tmp_path: Path) -> None:
     assert cfg.database_url == "sqlite://"
 
 
+def test_vercel_neon_prefixed_database_url_is_used(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setenv(
+        "ICU_DATABASE_DATABASE_URL",
+        "postgresql+psycopg://user:password@db.example/icu",
+    )
+    cfg = Settings(project_root=tmp_path)
+    assert cfg.database_url == "postgresql+psycopg://user:password@db.example/icu"
+
+
 def test_the_root_is_resolved_to_an_absolute_path(clean_env: Path) -> None:
     cfg = Settings(project_root=Path("."))
     assert cfg.project_root.is_absolute()

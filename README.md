@@ -509,6 +509,11 @@ Vercel is an appropriate target for the stateless scoring endpoints and request-
    ICU_SIMULATION_SEED=20260905
    ```
 
+   If Neon is connected through Vercel's native integration, its generated pooled URL may
+   appear as `ICU_DATABASE_DATABASE_URL` when the integration prefix is `ICU_DATABASE`.
+   The application accepts that generated alias; `ICU_DATABASE_URL` remains the preferred
+   name for manual configuration.
+
    Do not commit these values. Add them through Vercel's Environment Variables settings or the Vercel CLI.
 4. Deploy, then verify the public probes:
 
