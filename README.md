@@ -481,7 +481,7 @@ A green suite says the units agree with each other. Only job 3 says the install 
 
 ### Vercel
 
-Vercel deploys the FastAPI application from the `icu_monitor.api.main:app` entry point configured in [`pyproject.toml`](pyproject.toml). The committed [`vercel.json`](vercel.json) limits function duration and excludes tests, local data, model artefacts, Docker files, and other development-only content from the function bundle. The committed [`.python-version`](.python-version) selects Python 3.14, which is supported by Vercel's [Python runtime](https://vercel.com/docs/functions/runtimes/python).
+Vercel deploys the FastAPI application from the root-level [`api/index.py`](api/index.py) entry point. That small adapter adds the repository's `src/` package to Python's import path and exposes the existing `icu_monitor.api.main:app`; local, Docker, and Streamlit runs continue to use the same application module. The committed [`vercel.json`](vercel.json) limits function duration and excludes tests, local data, model artefacts, Docker files, and other development-only content from the function bundle. The committed [`.python-version`](.python-version) selects Python 3.14, which is supported by Vercel's [Python runtime](https://vercel.com/docs/functions/runtimes/python).
 
 Vercel is an appropriate target for the stateless scoring endpoints and request-driven API, as described in Vercel's [FastAPI deployment guide](https://vercel.com/kb/guide/ship-a-fastapi-app-on-vercel). It is not the persistence or dashboard host for this project:
 

@@ -58,9 +58,6 @@ icu-monitor = "icu_monitor.cli:main"
 Homepage = "https://github.com/gunarithvick/icu-patient-risk-monitoring-system"
 Issues = "https://github.com/gunarithvick/icu-patient-risk-monitoring-system/issues"
 
-[tool.vercel]
-entrypoint = "icu_monitor.api.main:app"
-
 [tool.setuptools.packages.find]
 where = ["src"]
 
