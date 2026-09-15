@@ -188,7 +188,7 @@ def _sqlite_pragmas(dbapi_connection, _connection_record) -> None:
 def build_engine(config: Settings | None = None, *, url: str | None = None) -> Engine:
     """Create the SQLAlchemy engine, making the SQLite directory if needed."""
     cfg = config or default_settings
-    resolved = url or cfg.database_url or "sqlite://"
+    resolved = _normalise_postgres_driver(url or cfg.database_url or "sqlite://")
 
     kwargs: dict[str, object] = {"future": True, "echo": False}
     if _is_sqlite(resolved):
@@ -204,6 +204,19 @@ def build_engine(config: Settings | None = None, *, url: str | None = None) -> E
     engine = create_engine(resolved, **kwargs)
     logger.debug("Database engine ready (%s).", engine.url.render_as_string(hide_password=True))
     return engine
+
+
+def _normalise_postgres_driver(url: str) -> str:
+    """Select the installed PostgreSQL driver for generic provider URLs.
+
+    Neon and other managed providers commonly return ``postgresql://`` or ``postgres://``.
+    SQLAlchemy otherwise defaults those URLs to the legacy ``psycopg2`` driver, while this
+    project intentionally installs the current ``psycopg`` package for the serverless API.
+    """
+    for prefix in ("postgresql://", "postgres://"):
+        if url.startswith(prefix):
+            return "postgresql+psycopg://" + url[len(prefix) :]
+    return url
 
 
 def create_all(engine: Engine) -> None:

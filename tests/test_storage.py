@@ -40,6 +40,7 @@ from icu_monitor.storage.database import (
     PatientRow,
     SchemaMeta,
     VitalsRow,
+    _normalise_postgres_driver,
     build_engine,
     build_session_factory,
     create_all,
@@ -156,6 +157,16 @@ def test_a_file_database_creates_its_own_directory(tmp_path) -> None:
     engine = build_engine(url=f"sqlite:///{target}")
     engine.dispose()
     assert (tmp_path / "nested" / "deeper").is_dir()
+
+
+def test_generic_postgres_urls_use_the_installed_psycopg_driver() -> None:
+    """Managed providers return generic URLs; do not make production require psycopg2."""
+    assert _normalise_postgres_driver("postgresql://user:password@db.example/icu") == (
+        "postgresql+psycopg://user:password@db.example/icu"
+    )
+    assert _normalise_postgres_driver("postgres://user:password@db.example/icu") == (
+        "postgresql+psycopg://user:password@db.example/icu"
+    )
 
 
 def test_creating_the_schema_twice_is_harmless(config: Settings) -> None:
