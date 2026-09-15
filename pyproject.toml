@@ -55,8 +55,8 @@ dev = [
 icu-monitor = "icu_monitor.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/gunarithvick/icu-patient-risk-monitoring-system"
-Issues = "https://github.com/gunarithvick/icu-patient-risk-monitoring-system/issues"
+Homepage = "https://github.com/gunargrithvick/icu-patient-risk-monitoring-system"
+Issues = "https://github.com/gunargrithvick/icu-patient-risk-monitoring-system/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

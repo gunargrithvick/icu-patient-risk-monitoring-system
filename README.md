@@ -2,14 +2,20 @@
 
 **Real-time ICU deterioration monitoring: a published clinical early-warning score, a machine-learning acuity model, and a bedside vision channel, fused into one explainable risk number per bed.**
 
-[![CI](https://github.com/gunarithvick/icu-patient-risk-monitoring-system/actions/workflows/ci.yml/badge.svg)](https://github.com/gunarithvick/icu-patient-risk-monitoring-system/actions/workflows/ci.yml)
+[![CI](https://github.com/gunargrithvick/icu-patient-risk-monitoring-system/actions/workflows/ci.yml/badge.svg)](https://github.com/gunargrithvick/icu-patient-risk-monitoring-system/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-1530%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-1531%20passing-brightgreen.svg)](tests/)
 
 > **Not a medical device.** This is a research and teaching project. No threshold here has been calibrated against a real ward, and the model is trained on a public retrospective cohort. See [Limitations](#limitations).
 
 ---
+
+## Live API
+
+Try the deployed FastAPI service: [ICU Patient Risk Monitoring System API](https://icu-patient-risk-monitoring-system.vercel.app/).
+
+The public health, readiness, metrics, and interactive documentation probes are available without credentials. The operational `/api/v1` routes require the deployment's private `X-API-Key`; it is intentionally not published in this repository. The production deployment uses the connected Neon PostgreSQL database and synthetic ward data, so it is suitable for evaluation—not clinical use.
 
 ## What it does
 
@@ -423,7 +429,7 @@ python -m pip install -e ".[dev]"
 
 | Command | |
 |---|---|
-| `pytest tests/` | The suite — **1 530 tests** |
+| `pytest tests/` | The suite — **1 531 tests** |
 | `pytest tests/ --cov` | With coverage |
 | `ruff check src tests` | Lint, including import order |
 | `ruff format src tests` | Format |
@@ -501,7 +507,7 @@ Vercel is an appropriate target for the stateless scoring endpoints and request-
    ICU_ENVIRONMENT=cloud
    ICU_API_KEY=<long-random-secret>
    ICU_DATABASE_URL=postgresql+psycopg://<user>:<password>@<host>:<port>/<database>
-   ICU_CORS_ORIGINS=["https://<your-vercel-domain>"]
+   ICU_CORS_ORIGINS=["https://icu-patient-risk-monitoring-system.vercel.app"]
    ICU_VITALS_SOURCE=simulator
    ICU_FRAME_SOURCE=off
    ICU_DETECTOR=off
@@ -518,12 +524,12 @@ Vercel is an appropriate target for the stateless scoring endpoints and request-
 4. Deploy, then verify the public probes:
 
    ```bash
-   curl https://<your-vercel-domain>/health
-   curl https://<your-vercel-domain>/ready
-   curl -H "X-API-Key: <long-random-secret>" https://<your-vercel-domain>/api/v1/ward
+   curl https://icu-patient-risk-monitoring-system.vercel.app/health
+   curl https://icu-patient-risk-monitoring-system.vercel.app/ready
+   curl -H "X-API-Key: <long-random-secret>" https://icu-patient-risk-monitoring-system.vercel.app/api/v1/ward
    ```
 
-   The interactive API documentation is at `https://<your-vercel-domain>/docs`. A healthy deployment should show `database: connected`, `vision: off` or unavailable, and a `model` component that is either loaded or explicitly unavailable while NEWS2 remains active.
+   The interactive API documentation is at `https://icu-patient-risk-monitoring-system.vercel.app/docs`. A healthy deployment should show `database: connected`, `vision: off` or unavailable, and a `model` component that is either loaded or explicitly unavailable while NEWS2 remains active.
 
 For local Vercel-shaped testing, install the Vercel CLI with `npm install --global vercel`, run `vercel dev`, and exercise the same `/health`, `/ready`, `/docs`, and authenticated `/api/v1/ward` URLs before creating a production deployment. Vercel's Python runtime currently supports Python 3.12, 3.13, and 3.14; this project pins 3.14 for the Vercel deployment while CI continues to test the supported package range. See Vercel's [runtime filesystem and limits](https://vercel.com/docs/functions/runtimes) before adding any new persistent or long-running feature.
 
@@ -588,7 +594,7 @@ The first version was a single-machine demo. It worked on the machine it was wri
 | Evaluation | a single random split | grouped splits, per-class metrics, calibration bins, a written model card |
 | Scoring | ML only | NEWS2 + ML + vision, weighted and renormalised, with clinical override floors |
 | Config | constants in source | `ICU_`-prefixed settings, validated, with `python -m icu_monitor info` to show what resolved |
-| Tests | none | 1 530, including 209 that drive the dashboard itself |
+| Tests | none | 1 531, including 209 that drive the dashboard itself |
 | Deploy | run the script | wheel, Docker image, Compose stack, hosted Streamlit, 4-job CI |
 
 The most important change is not in that table. In v1, a missing camera, a missing model file, or a bad vital ended the process. In v2 each of those is a degraded mode that the system reports and keeps running through — because a monitor that stops monitoring when one input fails is worse than no monitor at all.

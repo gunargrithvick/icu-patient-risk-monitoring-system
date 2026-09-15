@@ -51,7 +51,7 @@ FROM python:${PYTHON_VERSION}-slim-bookworm AS runtime
 
 LABEL org.opencontainers.image.title="ICU Sentinel" \
       org.opencontainers.image.description="ICU deterioration monitoring: NEWS2, ML risk stratification, bedside vision." \
-      org.opencontainers.image.source="https://github.com/gunarithvick/icu-patient-risk-monitoring-system" \
+      org.opencontainers.image.source="https://github.com/gunargrithvick/icu-patient-risk-monitoring-system" \
       org.opencontainers.image.licenses="MIT"
 
 ENV PATH="/opt/venv/bin:$PATH" \
